@@ -1,0 +1,7 @@
+<svg width="800" height="800" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="800" fill="#0D0D0D" />
+  <g opacity="0.8">
+    <rect x="100" y="400" width="100" height="400" fill="#FF00FF"/><rect x="250" y="300" width="120" height="500" fill="#00FFFF"/><rect x="450" y="500" width="80" height="300" fill="#FF00FF"/><rect x="600" y="350" width="100" height="450" fill="#00FFFF"/>
+  </g>
+  <text x="780" y="780" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="24" fill="#FFFFFF" opacity="0.7">CYBERPUNK STYLE</text>
+</svg>
