@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { Copy, Bookmark } from 'lucide-react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Copy as CopyIcon, Bookmark as BookmarkIcon } from 'lucide-react';
 import { BeforeAfterSlider } from '@/components/ui/BeforeAfterSlider';
 import { promptApi } from '@/lib/api';
 import { PromptDetail } from '@/types';
@@ -12,9 +12,9 @@ import { useToastStore } from '@/stores/toastStore';
 import PromptDetailSkeleton from '@/components/skeletons/PromptDetailSkeleton';
 import Link from 'next/link';
 
-export default function PromptDetailClient() {
-  const params = useParams();
-  const id = params.id as string;
+function PromptDetailContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
 
   const [prompt, setPrompt] = useState<PromptDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,10 +26,14 @@ export default function PromptDetailClient() {
   const showToast = useToastStore((state) => state.show);
 
   useEffect(() => {
-    if (!id || id === 'placeholder') return;
+    if (!id) {
+      setIsLoading(false);
+      return;
+    }
 
     const fetchDetail = async () => {
       try {
+        setIsLoading(true);
         const data = await promptApi.detail(Number(id));
         setPrompt(data);
         setIsBookmarked(data.isBookmarked);
@@ -79,7 +83,17 @@ export default function PromptDetailClient() {
     }
   };
 
-  if (id === 'placeholder') return null;
+  if (!id) {
+    return (
+      <div className="mx-auto max-w-[1280px] px-6 py-20 text-center">
+        <p className="text-heading-md text-gr-200 mb-4">잘못된 접근입니다</p>
+        <Link href="/" className="text-primary underline text-body-500">
+          메인으로 돌아가기
+        </Link>
+      </div>
+    );
+  }
+
   if (isLoading) return <PromptDetailSkeleton />;
 
   if (!prompt) {
@@ -102,10 +116,10 @@ export default function PromptDetailClient() {
         <h1 className="text-heading-lg text-gr-100 mb-2">{prompt.title}</h1>
         <div className="flex items-center gap-3 text-caption-lg-400 text-gr-300">
           <span className="flex items-center" style={{ gap: '4px' }}>
-            <Copy size={16} /> {prompt.copyCount}
+            <CopyIcon size={16} /> {prompt.copyCount}
           </span>
           <span className="flex items-center" style={{ gap: '4px' }}>
-            <Bookmark
+            <BookmarkIcon
               size={16}
               fill={isBookmarked ? 'currentColor' : 'none'}
               className={isBookmarked ? 'text-primary' : ''}
@@ -142,7 +156,7 @@ export default function PromptDetailClient() {
               onClick={handleCopy}
               className="flex-1 bg-primary text-white py-3 rounded-md text-body-500 flex items-center justify-center gap-2 hover:opacity-90 transition shadow-sm"
             >
-              <Copy size={18} />
+              <CopyIcon size={18} />
               프롬프트 복사
             </button>
             <button
@@ -150,7 +164,7 @@ export default function PromptDetailClient() {
               className="p-3 bg-bg-100 border border-line-100 rounded-md hover:bg-bg-200 transition"
               aria-label="북마크"
             >
-              <Bookmark
+              <BookmarkIcon
                 size={18}
                 className={
                   isBookmarked ? 'fill-primary text-primary' : 'text-gr-200'
@@ -172,5 +186,13 @@ export default function PromptDetailClient() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PromptDetailPage() {
+  return (
+    <Suspense fallback={<PromptDetailSkeleton />}>
+      <PromptDetailContent />
+    </Suspense>
   );
 }

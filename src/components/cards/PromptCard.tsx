@@ -39,7 +39,7 @@ const PromptCard = ({ prompt, onCopyCountUpdate }: PromptCardProps) => {
 
   return (
     <Link
-      href={`/prompts/${prompt.id}`}
+      href={`/prompts/detail?id=${prompt.id}`}
       className="group block transition-transform hover:-translate-y-1"
     >
       {/* Image Area */}
