@@ -11,8 +11,15 @@ interface PopularPromptsSectionProps {
   isLoading: boolean;
 }
 
-const VISIBLE_COUNT = 4;
-const AUTO_SLIDE_INTERVAL = 5000; // 5초
+const AUTO_SLIDE_INTERVAL = 5000;
+
+// 화면 너비에 따라 보여줄 카드 수 반환
+function getVisibleCount() {
+  if (typeof window === 'undefined') return 4;
+  if (window.innerWidth < 640) return 1;
+  if (window.innerWidth < 1024) return 2;
+  return 4;
+}
 
 export default function PopularPromptsSection({
   prompts,
@@ -20,10 +27,23 @@ export default function PopularPromptsSection({
 }: PopularPromptsSectionProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(4);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 총 페이지 수 (4개씩 묶음)
-  const totalPages = Math.ceil(prompts.length / VISIBLE_COUNT);
+  // visibleCount 초기화 및 resize 감지
+  useEffect(() => {
+    setVisibleCount(getVisibleCount());
+
+    const handleResize = () => {
+      setVisibleCount(getVisibleCount());
+      setCurrentPage(0);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const totalPages = Math.ceil(prompts.length / visibleCount);
 
   // 자동 슬라이드
   useEffect(() => {
@@ -34,9 +54,7 @@ export default function PopularPromptsSection({
     }, AUTO_SLIDE_INTERVAL);
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [isPaused, totalPages, isLoading]);
 
@@ -50,8 +68,15 @@ export default function PopularPromptsSection({
 
   if (!isLoading && prompts.length === 0) return null;
 
+  const gridClass =
+    visibleCount === 1
+      ? 'grid-cols-1'
+      : visibleCount === 2
+      ? 'grid-cols-2'
+      : 'grid-cols-4';
+
   return (
-    <section className="mx-auto max-w-[1280px] px-6 pt-8 pb-4">
+    <section className="mx-auto max-w-[1280px] px-4 pb-4 pt-8 md:px-6">
       <h2 className="mb-4 text-heading-md text-gr-100">인기 프롬프트</h2>
 
       <div
@@ -61,8 +86,8 @@ export default function PopularPromptsSection({
       >
         {/* 카드 그리드 */}
         {isLoading ? (
-          <div className="grid grid-cols-4 gap-6">
-            {[...Array(VISIBLE_COUNT)].map((_, i) => (
+          <div className={`grid ${gridClass} gap-4 md:gap-6`}>
+            {[...Array(visibleCount)].map((_, i) => (
               <PromptCardSkeleton key={i} />
             ))}
           </div>
@@ -70,29 +95,31 @@ export default function PopularPromptsSection({
           <div className="overflow-hidden">
             <div
               className="flex transition-transform duration-500 ease-in-out"
-              style={{
-                transform: `translateX(-${currentPage * 100}%)`,
-              }}
+              style={{ transform: `translateX(-${currentPage * 100}%)` }}
             >
               {Array.from({ length: totalPages }).map((_, pageIndex) => {
                 const pagePrompts = prompts.slice(
-                  pageIndex * VISIBLE_COUNT,
-                  pageIndex * VISIBLE_COUNT + VISIBLE_COUNT
+                  pageIndex * visibleCount,
+                  pageIndex * visibleCount + visibleCount,
                 );
-                
+
                 return (
                   <div
                     key={pageIndex}
-                    className="grid w-full flex-shrink-0 grid-cols-4 gap-6"
+                    className={`grid w-full flex-shrink-0 ${gridClass} gap-4 md:gap-6`}
                   >
                     {pagePrompts.map((prompt) => (
                       <PromptCard key={prompt.id} prompt={prompt} />
                     ))}
-                    
-                    {/* 카드 개수가 4개 미만일 때 빈 공간 채우기 */}
-                    {pagePrompts.length < VISIBLE_COUNT &&
-                      Array.from({ length: VISIBLE_COUNT - pagePrompts.length }).map((_, i) => (
-                        <div key={`empty-${pageIndex}-${i}`} className="invisible" />
+
+                    {pagePrompts.length < visibleCount &&
+                      Array.from({
+                        length: visibleCount - pagePrompts.length,
+                      }).map((_, i) => (
+                        <div
+                          key={`empty-${pageIndex}-${i}`}
+                          className="invisible"
+                        />
                       ))}
                   </div>
                 );
@@ -101,11 +128,11 @@ export default function PopularPromptsSection({
           </div>
         )}
 
-        {/* 좌측 화살표 — hover 시에만 표시 */}
+        {/* 좌측 화살표 — 데스크탑 hover 시에만 표시 */}
         {!isLoading && totalPages > 1 && (
           <button
             onClick={handlePrev}
-            className={`absolute left-0 top-[31%] z-10 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-line-100 bg-bg-100 shadow-lg transition-all duration-300 hover:shadow-xl ${
+            className={`absolute left-0 top-[31%] z-10 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-line-100 bg-bg-100 shadow-lg transition-all duration-300 hover:shadow-xl md:flex ${
               isPaused ? 'opacity-100' : 'pointer-events-none opacity-0'
             }`}
             aria-label="이전 페이지"
@@ -114,11 +141,11 @@ export default function PopularPromptsSection({
           </button>
         )}
 
-        {/* 우측 화살표 — hover 시에만 표시 */}
+        {/* 우측 화살표 — 데스크탑 hover 시에만 표시 */}
         {!isLoading && totalPages > 1 && (
           <button
             onClick={handleNext}
-            className={`absolute right-0 top-[31%] z-10 flex h-10 w-10 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-line-100 bg-bg-100 shadow-lg transition-all duration-300 hover:shadow-xl ${
+            className={`absolute right-0 top-[31%] z-10 hidden h-10 w-10 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-line-100 bg-bg-100 shadow-lg transition-all duration-300 hover:shadow-xl md:flex ${
               isPaused ? 'opacity-100' : 'pointer-events-none opacity-0'
             }`}
             aria-label="다음 페이지"

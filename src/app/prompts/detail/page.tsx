@@ -85,7 +85,7 @@ function PromptDetailContent() {
 
   if (!id) {
     return (
-      <div className="mx-auto max-w-[1280px] px-6 py-20 text-center">
+      <div className="mx-auto max-w-[1280px] px-4 py-20 text-center md:px-6">
         <p className="text-heading-md text-gr-200 mb-4">잘못된 접근입니다</p>
         <Link href="/" className="text-primary underline text-body-500">
           메인으로 돌아가기
@@ -98,7 +98,7 @@ function PromptDetailContent() {
 
   if (!prompt) {
     return (
-      <div className="mx-auto max-w-[1280px] px-6 py-20 text-center">
+      <div className="mx-auto max-w-[1280px] px-4 py-20 text-center md:px-6">
         <p className="text-heading-md text-gr-200 mb-4">
           프롬프트를 찾을 수 없습니다
         </p>
@@ -110,10 +110,12 @@ function PromptDetailContent() {
   }
 
   return (
-    <div className="mx-auto max-w-[1280px] px-6 py-8">
+    <div className="mx-auto max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
       {/* Top Info Area */}
-      <div className="mb-6">
-        <h1 className="text-heading-lg text-gr-100 mb-2">{prompt.title}</h1>
+      <div className="mb-5 md:mb-6">
+        <h1 className="text-heading-md md:text-heading-lg text-gr-100 mb-2">
+          {prompt.title}
+        </h1>
         <div className="flex items-center gap-3 text-caption-lg-400 text-gr-300">
           <span className="flex items-center" style={{ gap: '4px' }}>
             <CopyIcon size={16} /> {prompt.copyCount}
@@ -129,8 +131,8 @@ function PromptDetailContent() {
         </div>
       </div>
 
-      {/* Main Content: 2-Column Grid */}
-      <div className="grid grid-cols-2 gap-8 items-start">
+      {/* Main Content: 모바일 1열, 데스크탑 2열 */}
+      <div className="grid grid-cols-1 gap-6 items-start md:grid-cols-2 md:gap-8">
         {/* Left: Before/After Slider Area */}
         <div>
           <div className="overflow-hidden rounded-2xl border border-line-100 shadow-sm bg-bg-200">
@@ -145,7 +147,7 @@ function PromptDetailContent() {
           </p>
         </div>
 
-        {/* Right: Prompt Text Area - 외부 박스 */}
+        {/* Right: Prompt Text Area */}
         <div
           className="flex flex-col gap-3 border border-line-100 p-4"
           style={{ borderRadius: 'var(--radius-xl)' }}

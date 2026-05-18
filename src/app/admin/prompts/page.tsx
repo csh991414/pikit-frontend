@@ -92,7 +92,8 @@ export default function AdminPromptsPage() {
   if (!isAuthenticated || !isAdmin) return null;
 
   return (
-    <div className="mx-auto max-w-[1280px] px-4 lg:px-6 py-8 min-h-[calc(100vh-64px-180px)]">
+    <div className="mx-auto max-w-[1280px] px-4 py-6 min-h-[calc(100vh-64px-180px)] lg:px-6 lg:py-8">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         {/* Left: Title + Search */}
         <div
@@ -106,7 +107,7 @@ export default function AdminPromptsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="검색"
-                className="w-[220px]"
+                className="w-[180px] md:w-[220px]"
               />
               <button
                 onClick={() => {
@@ -125,7 +126,7 @@ export default function AdminPromptsPage() {
           )}
         </div>
 
-        {/* Right: 프롬프트 등록 버튼 */}
+        {/* Right: 등록 버튼 */}
         <button
           onClick={() => {
             setModalMode('create');
@@ -144,11 +145,13 @@ export default function AdminPromptsPage() {
           }}
         >
           <Plus size={16} />
-          프롬프트 등록
+          <span className="hidden sm:inline">프롬프트 등록</span>
+          <span className="sm:hidden">등록</span>
         </button>
       </div>
 
-      <div className="overflow-x-auto bg-bg-100">
+      {/* 데스크탑: 테이블 */}
+      <div className="hidden md:block overflow-x-auto bg-bg-100">
         <table className="w-full border-collapse">
           <thead>
             <tr
@@ -232,6 +235,66 @@ export default function AdminPromptsPage() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* 모바일: 카드 리스트 */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {loading ? (
+          <p className="py-20 text-center text-gr-300">로딩 중...</p>
+        ) : filteredPrompts.length === 0 ? (
+          <p className="py-20 text-center text-gr-300">
+            {searchQuery
+              ? '검색 결과가 없습니다.'
+              : '등록된 프롬프트가 없습니다.'}
+          </p>
+        ) : (
+          filteredPrompts.map((p) => (
+            <div
+              key={p.id}
+              className="rounded-lg border border-line-100 bg-bg-100 px-4 py-3"
+            >
+              {/* 제목 + 액션 버튼 */}
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <p className="text-body-500 text-gr-100 leading-snug line-clamp-2 flex-1">
+                  {p.title}
+                </p>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => {
+                      setModalMode('edit');
+                      setSelectedPrompt(p);
+                      setIsModalOpen(true);
+                    }}
+                    aria-label="수정"
+                    className="p-1.5 hover:bg-bg-200 rounded transition-colors"
+                  >
+                    <Pencil size={16} className="text-primary" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(p.id)}
+                    aria-label="삭제"
+                    className="p-1.5 hover:bg-bg-200 rounded transition-colors text-gr-300 hover:text-danger"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* 메타 정보 */}
+              <div className="flex items-center gap-3 text-caption-lg-400 text-gr-300">
+                <span>복사 {p.copyCount}</span>
+                <span
+                  className={`text-caption-lg-500 ${
+                    p.visible ? 'text-primary' : 'text-gr-300'
+                  }`}
+                >
+                  {p.visible ? '노출' : '숨김'}
+                </span>
+                <span className="ml-auto">{formatDate(p.createdAt)}</span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {totalPages > 1 && (
