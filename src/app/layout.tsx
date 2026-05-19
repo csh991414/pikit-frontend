@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     siteName: "Pikit",
     images: [
       {
-        url: "https://pikit.life/og_pikit_logo.png",
+        url: "https://pikit.life/OG_pikit_logo.png",
         width: 1200,
         height: 630,
         alt: "Pikit",
