@@ -7,6 +7,22 @@ import Toast from '@/components/common/Toast';
 export const metadata: Metadata = {
   title: 'Pikit - AI Prompt Archive',
   description: 'Collect and search AI image prompts from Instagram',
+  openGraph: {
+    title: "Pikit - AI Prompt Archive",
+    description: "인스타그램 AI 이미지 프롬프트 아카이브",
+    url: "https://pikit.life",
+    siteName: "Pikit",
+    images: [
+      {
+        url: "https://pikit.life/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Pikit",
+      },
+    ],
+    locale: "ko_KR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
