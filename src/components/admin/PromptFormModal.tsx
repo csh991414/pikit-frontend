@@ -13,7 +13,7 @@ interface PromptFormModalProps {
   onSuccess: () => void;
 }
 
-const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_SIZE = 2.5 * 1024 * 1024; // 2.5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
 
 export default function PromptFormModal({ mode, initialData, onClose, onSuccess }: PromptFormModalProps) {
@@ -267,7 +267,7 @@ export default function PromptFormModal({ mode, initialData, onClose, onSuccess 
           >
             <p className="text-heading-md text-gr-100 mb-2">파일이 너무 큽니다</p>
             <p className="text-body-400 text-gr-200 mb-6">
-              이미지 한 장당 최대 10MB까지<br />업로드할 수 있습니다.
+              이미지 한 장당 최대 2.5MB까지<br />업로드할 수 있습니다.
             </p>
             <button
               onClick={() => setSizeErrorModal(false)}
