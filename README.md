@@ -87,9 +87,6 @@
     <td align="center"><strong>상세 페이지 (Before/After)</strong></td>
   </tr>
   <tr>
-    <td><img src="./public/screenshots/home.png" alt="홈화면" width="450"/></td>
-  </tr>
-  <tr>
     <td><img src="./public/screenshots/detail.png" alt="상세 페이지" width="450"/></td>
   </tr>
 </table>
