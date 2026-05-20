@@ -20,7 +20,20 @@ interface ApiOptions extends RequestInit {
   skipAuth?: boolean;
 }
 
+// Token refresh queueing
 let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: Error | null, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
 
 export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
   const { skipAuth = false, ...fetchOptions } = options;
@@ -44,27 +57,44 @@ export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): 
 
   // 401 Unauthorized handling
   if (response.status === 401 && !skipAuth && endpoint !== '/api/auth/refresh') {
-    if (!isRefreshing) {
-      isRefreshing = true;
-      const refreshed = await refreshAccessToken();
-      isRefreshing = false;
-
-      if (refreshed) {
-        // Retry once with new token
-        const newAccessToken = useAuthStore.getState().accessToken;
-        if (newAccessToken) {
-          headers.set('Authorization', `Bearer ${newAccessToken}`);
-          response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-        }
-      } else {
-        clearAuth();
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
-        throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+    if (isRefreshing) {
+      // Add to queue and wait for token
+      try {
+        const newToken = await new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        });
+        
+        headers.set('Authorization', `Bearer ${newToken}`);
+        response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+      } catch (err) {
+        throw new Error('인증 만료로 요청을 처리할 수 없습니다.');
       }
     } else {
-      throw new Error('인증 갱신 중입니다. 잠시 후 다시 시도해주세요.');
+      isRefreshing = true;
+      
+      try {
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+          const newAccessToken = useAuthStore.getState().accessToken;
+          processQueue(null, newAccessToken);
+          
+          headers.set('Authorization', `Bearer ${newAccessToken}`);
+          response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        } else {
+          const error = new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+          processQueue(error);
+          clearAuth();
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
+          throw error;
+        }
+      } catch (err) {
+        processQueue(err instanceof Error ? err : new Error('인증 갱신 중 오류 발생'));
+        throw err;
+      } finally {
+        isRefreshing = false;
+      }
     }
   }
 
@@ -98,7 +128,6 @@ async function refreshAccessToken(): Promise<boolean> {
     console.error('Refresh token failed:', error);
   }
 
-  clearAuth();
   return false;
 }
 
