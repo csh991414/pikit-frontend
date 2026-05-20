@@ -88,6 +88,8 @@
   </tr>
   <tr>
     <td><img src="./public/screenshots/home.png" alt="홈화면" width="450"/></td>
+  </tr>
+  <tr>
     <td><img src="./public/screenshots/detail.png" alt="상세 페이지" width="450"/></td>
   </tr>
 </table>
@@ -95,6 +97,8 @@
 <br/>
 
 ## 📁 프로젝트 구조
+
+```text
 Pikit_Frontend/
 ├── src/
 │   ├── app/                    # Next.js App Router (페이지)
@@ -114,6 +118,7 @@ Pikit_Frontend/
 │   └── _redirects              # Cloudflare SPA 폴백
 ├── next.config.ts              # output: 'export'
 └── package.json
+```
 
 <br/>
 
