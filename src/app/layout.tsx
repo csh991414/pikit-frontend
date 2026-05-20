@@ -7,6 +7,15 @@ import Toast from '@/components/common/Toast';
 export const metadata: Metadata = {
   title: 'Pikit - AI Prompt Archive',
   description: 'Collect and search AI image prompts from Instagram',
+  icons: {
+    icon: [
+      {
+        url: '/symbol48.png',
+        sizes: '48x48',
+        type: 'image/png',
+      },
+    ],
+  },
   openGraph: {
     title: "Pikit - AI Prompt Archive",
     description: "인스타그램 AI 이미지 프롬프트 아카이브",
