@@ -83,7 +83,6 @@
 
 <table>
   <tr>
-    <td align="center"><strong>홈화면</strong></td>
     <td align="center"><strong>상세 페이지 (Before/After)</strong></td>
   </tr>
   <tr>
