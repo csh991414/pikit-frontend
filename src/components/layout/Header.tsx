@@ -116,7 +116,11 @@ const Header = () => {
     clearAuth();
     setIsDropdownOpen(false);
     setIsMobileMenuOpen(false);
-    router.push('/');
+     if (pathname === '/') {
+      window.location.reload(); // 홈화면이면 강제 새로고침
+    } else {
+      router.push('/'); // 다른 화면이면 홈으로 이동
+    }
   };
 
   const handleLogoClick = (e: React.MouseEvent) => {
