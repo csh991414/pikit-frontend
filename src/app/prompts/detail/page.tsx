@@ -90,9 +90,10 @@ function PromptDetailContent() {
       
       // 4) 토스트
       showToast(
-        result.bookmarked
+        !prevBookmarked
           ? '북마크에 저장되었습니다.'
           : '북마크가 해제되었습니다.',
+        'success'
       );
     } catch (err) {
       // 5) 실패 시 롤백
