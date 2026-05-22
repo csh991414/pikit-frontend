@@ -38,10 +38,9 @@ const PromptCard = ({ prompt, onCopyCountUpdate }: PromptCardProps) => {
   };
 
   const handleCardClick = () => {
-    // Google Tag Manager event tracking
-    if (typeof window !== 'undefined' && (window as any).dataLayer) {
-      (window as any).dataLayer.push({
-        event: 'prompt_click',
+    // Google Analytics (GA4) event tracking
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'prompt_click', {
         prompt_id: prompt.id,
         prompt_title: prompt.title,
         prompt_model: prompt.aiModel,
