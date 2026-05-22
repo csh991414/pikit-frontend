@@ -195,6 +195,11 @@ export const promptApi = {
       `/api/prompts/search?q=${encodeURIComponent(q)}&page=${page}&size=${size}`,
       { skipAuth: true }
     ),
+
+  getMyBookmarks: (page = 0, size = 16) =>
+    apiClient<PageResponse<PromptListItem>>(
+      `/api/users/me/bookmarks?page=${page}&size=${size}`
+    ),
 };
 
 export const adminApi = {

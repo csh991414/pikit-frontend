@@ -236,9 +236,16 @@ const Header = () => {
                   </button>
                   {isDropdownOpen && (
                     <div className="absolute right-0 top-full mt-2 w-32 overflow-hidden rounded-md border border-line-100 bg-bg-100 shadow-lg">
+                      <Link
+                        href="/my"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="block w-full px-4 py-2 text-left text-caption-lg-500 text-gr-200 hover:bg-bg-200 hover:text-gr-100"
+                      >
+                        마이페이지
+                      </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full px-4 py-2 text-left text-caption-lg-500 text-gr-200 hover:bg-bg-200 hover:text-gr-100"
+                        className="w-full px-4 py-2 text-left text-caption-lg-500 text-gr-200 hover:bg-bg-200 hover:text-gr-100 border-t border-line-100"
                       >
                         로그아웃
                       </button>
@@ -348,6 +355,13 @@ const Header = () => {
                     </p>
                   </div>
                 </div>
+                <Link
+                  href="/my"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex w-full items-center justify-center rounded-md border border-line-100 py-2.5 text-caption-lg-500 text-gr-200 transition-colors hover:bg-bg-200 hover:text-gr-100"
+                >
+                  마이페이지
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="w-full rounded-md border border-line-100 py-2.5 text-caption-lg-500 text-gr-200 transition-colors hover:bg-bg-200 hover:text-gr-100"

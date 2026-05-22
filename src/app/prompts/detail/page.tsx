@@ -67,18 +67,39 @@ function PromptDetailContent() {
       openLoginModal();
       return;
     }
+
+    // 1) 즉시 UI 토글 (낙관적 업데이트)
+    const prevBookmarked = isBookmarked;
+    const prevCount = prompt.bookmarkCount;
+    
+    setIsBookmarked(!prevBookmarked);
+    setPrompt({
+      ...prompt,
+      bookmarkCount: prevBookmarked ? prevCount - 1 : prevCount + 1,
+    });
+
     try {
+      // 2) 백엔드 호출
       const result = await promptApi.toggleBookmark(prompt.id);
-      setIsBookmarked(result.bookmarked ?? false);
+      
+      // 3) 서버 응답으로 동기화
+      setIsBookmarked(result.bookmarked ?? !prevBookmarked);
       setPrompt((prev) =>
         prev ? { ...prev, bookmarkCount: result.count } : null,
       );
+      
+      // 4) 토스트
       showToast(
         result.bookmarked
-          ? '북마크에 추가되었습니다.'
+          ? '북마크에 저장되었습니다.'
           : '북마크가 해제되었습니다.',
       );
     } catch (err) {
+      // 5) 실패 시 롤백
+      setIsBookmarked(prevBookmarked);
+      setPrompt((prev) =>
+        prev ? { ...prev, bookmarkCount: prevCount } : null,
+      );
       showToast('북마크 처리에 실패했습니다.', 'error');
     }
   };
