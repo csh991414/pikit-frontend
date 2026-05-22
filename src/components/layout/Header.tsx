@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useUIStore } from '@/stores/uiStore';
 import { authApi } from '@/lib/api';
 import LoginModal from '@/components/auth/LoginModal';
-import { SearchBar } from '@/components/ui/SearchBar';
+import HeaderSearchBar from './HeaderSearchBar';
 
 const MenuIcon = () => (
   <svg
@@ -132,7 +132,7 @@ const Header = () => {
 
   const menuItems = [
     { label: '프롬프트', href: '/' },
-    { label: '질문해요', href: '/qa' },
+    //{ label: '질문해요', href: '/qa' },
   ];
 
   return (
@@ -184,7 +184,7 @@ const Header = () => {
           </div>
 
           {/* Center: Desktop Search */}
-          <SearchBar className="mx-4 hidden max-w-[380px] flex-1 md:flex" />
+          <HeaderSearchBar className="mx-4 hidden max-w-[380px] flex-1 md:flex" />
 
           {/* Right Area */}
           <div className="flex items-center gap-2">
@@ -269,7 +269,11 @@ const Header = () => {
         {/* Mobile Search Bar (expands below header) */}
         {isMobileSearchOpen && (
           <div className="border-t border-line-100 px-4 py-2 md:hidden">
-            <SearchBar className="w-full" autoFocus />
+            <HeaderSearchBar
+              className="w-full"
+              autoFocus
+              onSearch={() => setIsMobileSearchOpen(false)}
+            />
           </div>
         )}
       </header>

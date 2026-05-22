@@ -184,6 +184,17 @@ export const promptApi = {
       method: 'POST',
       skipAuth: true,
     }),
+
+  suggest: (q: string) =>
+    apiClient<{ id: number; title: string }[]>(`/api/prompts/suggest?q=${encodeURIComponent(q)}`, {
+      skipAuth: true,
+    }),
+
+  search: (q: string, page = 0, size = 16) =>
+    apiClient<PageResponse<PromptListItem>>(
+      `/api/prompts/search?q=${encodeURIComponent(q)}&page=${page}&size=${size}`,
+      { skipAuth: true }
+    ),
 };
 
 export const adminApi = {
