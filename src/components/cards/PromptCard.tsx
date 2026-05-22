@@ -37,9 +37,22 @@ const PromptCard = ({ prompt, onCopyCountUpdate }: PromptCardProps) => {
     }
   };
 
+  const handleCardClick = () => {
+    // Google Tag Manager event tracking
+    if (typeof window !== 'undefined' && (window as any).dataLayer) {
+      (window as any).dataLayer.push({
+        event: 'prompt_click',
+        prompt_id: prompt.id,
+        prompt_title: prompt.title,
+        prompt_model: prompt.aiModel,
+      });
+    }
+  };
+
   return (
     <Link
       href={`/prompts/detail?id=${prompt.id}`}
+      onClick={handleCardClick}
       className="group block transition-transform hover:-translate-y-1"
     >
       {/* Image Area */}
