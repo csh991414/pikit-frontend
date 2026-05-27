@@ -85,6 +85,41 @@ export interface SignupRequest {
   nickname: string;
 }
 
+export interface QuestionResponse {
+  id: number;
+  title: string;
+  content: string;
+  imageUrl: string | null;
+  viewCount: number;
+  commentCount: number;
+  authorNickname: string;
+  authorId: number;
+  isAuthor: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface QuestionCreateRequest {
+  title: string;
+  content: string;
+  imageUrl?: string;
+}
+
+export interface QuestionUpdateRequest {
+  title: string;
+  content: string;
+  imageUrl?: string;
+}
+
+export interface CommentResponse {
+  id: number;
+  content: string;
+  authorNickname: string;
+  authorId: number;
+  isAuthor: boolean;
+  createdAt: string;
+}
+
 export interface LoginRequest {
   username: string;
   password: string;
