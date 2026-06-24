@@ -132,7 +132,7 @@ const Header = () => {
 
   const menuItems = [
     { label: '프롬프트', href: '/' },
-    //{ label: '질문해요', href: '/qa' },
+    { label: '질문해요', href: '/qa' },
   ];
 
   return (

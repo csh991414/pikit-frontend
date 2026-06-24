@@ -12,6 +12,10 @@ import {
   PromptSort,
   PageResponse,
   PromptAdminItem,
+  QuestionResponse,
+  QuestionCreateRequest,
+  QuestionUpdateRequest,
+  CommentResponse,
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
@@ -40,7 +44,9 @@ export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): 
   const { accessToken, clearAuth } = useAuthStore.getState();
 
   const headers = new Headers(fetchOptions.headers);
-  if (!headers.has('Content-Type')) {
+  
+  // Only set Content-Type if it's not FormData
+  if (!headers.has('Content-Type') && !(fetchOptions.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
 
@@ -54,6 +60,12 @@ export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): 
   };
 
   let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+
+  // === 추가: 응답 헤더에 새 토큰 있으면 갱신 (Sliding Expiration) ===
+  const newAccessToken = response.headers.get('X-New-Access-Token');
+  if (newAccessToken) {
+    useAuthStore.getState().setAccessToken(newAccessToken);
+  }
 
   // 401 Unauthorized handling
   if (response.status === 401 && !skipAuth && endpoint !== '/api/auth/refresh') {
@@ -228,20 +240,57 @@ export const adminApi = {
       method: 'PATCH',
     }),
   
-  uploadImage: async (formData: FormData): Promise<{ url: string }> => {
-    const { accessToken } = useAuthStore.getState();
-    const res = await fetch(`${API_BASE_URL}/api/admin/upload`, {
+  uploadImage: (formData: FormData) =>
+    apiClient<{ url: string }>('/api/admin/upload', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
       body: formData,
-    });
+    }),
+};
 
-    const result: ApiResponse<{ url: string }> = await res.json();
-    if (!result.success || !result.data) {
-      throw new Error(result.message || '업로드 실패');
-    }
-    return result.data;
-  },
+export const questionApi = {
+  getList: (page = 0, size = 12) =>
+    apiClient<PageResponse<QuestionResponse>>(`/api/questions?page=${page}&size=${size}`, {
+      skipAuth: true,
+    }),
+
+  getOne: (id: number) =>
+    apiClient<QuestionResponse>(`/api/questions/${id}`, { skipAuth: true }),
+  
+  create: (data: QuestionCreateRequest) =>
+    apiClient<QuestionResponse>('/api/questions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  
+  delete: (id: number) =>
+    apiClient<void>(`/api/questions/${id}`, {
+      method: 'DELETE',
+    }),
+};
+
+export const commentApi = {
+  getList: (questionId: number, page = 0, size = 50) =>
+    apiClient<PageResponse<CommentResponse>>(
+      `/api/questions/${questionId}/comments?page=${page}&size=${size}`,
+      { skipAuth: true }
+    ),
+
+  create: (questionId: number, content: string) =>
+    apiClient<CommentResponse>(`/api/questions/${questionId}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ content }),
+    }),
+
+  delete: (commentId: number) =>
+    apiClient<void>(`/api/comments/${commentId}`, {
+      method: 'DELETE',
+    }),
+};
+
+export const uploadApi = {
+  uploadImage: (formData: FormData) =>
+    apiClient<{ url: string }>('/api/upload', {
+      method: 'POST',
+      body: formData,
+    }),
 };

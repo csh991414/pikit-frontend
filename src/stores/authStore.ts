@@ -30,6 +30,7 @@ interface AuthState {
   setAuth: (data: AuthResponse) => void;
   clearAuth: () => void;
   updateTokens: (accessToken: string, refreshToken: string) => void;
+  setAccessToken: (accessToken: string) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -69,6 +70,8 @@ export const useAuthStore = create<AuthState>()(
         accessToken,
         refreshToken,
       }),
+
+      setAccessToken: (accessToken: string) => set({ accessToken }),
     }),
     {
       name: 'pickit-auth',
