@@ -10,7 +10,6 @@ import { authApi } from '@/lib/api';
 const LoginModal = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +39,7 @@ const LoginModal = () => {
 
     try {
       const response = await authApi.login({ username: email, password });
-      setAuth(response, rememberMe);
+      setAuth(response);
       closeLoginModal();
       window.location.reload();
     } catch (err) {
@@ -118,19 +117,8 @@ const LoginModal = () => {
               )}
             </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <label className="flex cursor-pointer items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-line-100 text-primary focus:ring-primary accent-primary"
-                />
-                <span className="text-caption-lg-400 text-gr-100">
-                  로그인 유지
-                </span>
-              </label>
+            {/* Forgot Password */}
+            <div className="flex items-center justify-end">
               <Link
                 href="#"
                 className="text-caption-lg-400 text-gr-100 hover:text-gr-100"
